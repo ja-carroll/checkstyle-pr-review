@@ -8,6 +8,7 @@ import (
 	"checkstyle-review/github"
 	"context"
 	"errors"
+	"os"
 )
 
 // DiffService is an interface which get diff.
@@ -31,23 +32,27 @@ func Run(ctx context.Context, diffService *github.PullRequest, checkStyleResults
 	var errs []error
 	createDiffMappingDataStructures(fileDiffs)
 	filteredErrors := filterCheckStyleErrors(checkStyleResults)
+	postComments := make([]*comment.Comment, 0)
 	for _, res := range filteredErrors {
 		newC := &comment.Comment{
 			Result:   res,
 			ToolName: "checkStyle",
 		}
-		err := diffService.Post(ctx, newC)
-		if err != nil {
-			return err
-		}
+		postComments = append(postComments, newC)
+	}
+
+	err = diffService.PostAsReviewComment(ctx, postComments)
+	if err != nil {
+		return err
 	}
 
 	return errors.Join(errs...)
 }
 
 func createDiffMappingDataStructures(fileDiffs []*diff.FileDiff) {
+	cwd, _ := os.Getwd()
 	for _, file := range fileDiffs {
-		path := file.PathNew
+		path := github.NormalizePath(file.PathNew, cwd, "")
 		lines, ok := linesPerFile[path]
 		if !ok {
 			lines = make(map[int]*diff.Line)
@@ -67,13 +72,15 @@ func createDiffMappingDataStructures(fileDiffs []*diff.FileDiff) {
 }
 
 func filterCheckStyleErrors(checkStyleResults map[string][]*checkstylexml.CheckStyleErrorFormat) []*checkstylexml.CheckStyleErrorFormat {
+	cwd, _ := os.Getwd()
 	var filterErrors = make([]*checkstylexml.CheckStyleErrorFormat, 0)
 	for fileName, checkStyleResult := range checkStyleResults {
-		_, ok := linesPerFile[fileName]
+		pathFileName := github.NormalizePath(fileName, cwd, "")
+		_, ok := linesPerFile[pathFileName]
 		if ok {
 			for _, checkStyleErr := range checkStyleResult {
 				newLine := checkStyleErr.Line
-				_, isFine := linesPerFile[fileName][newLine]
+				_, isFine := linesPerFile[pathFileName][newLine]
 				if isFine {
 					filterErrors = append(filterErrors, checkStyleErr)
 				}

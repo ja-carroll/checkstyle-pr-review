@@ -25,8 +25,6 @@ type PullRequest struct {
 	sha              string
 	FallBackToGitCLI bool
 
-	postComments []*comment.Comment
-
 	// wd is working directory relative to root of repository.
 	wd string
 }
@@ -57,25 +55,8 @@ func NewGitHubPullRequest(cli *github.Client, owner, repo string, pr int, sha st
 	}, nil
 }
 
-// Post accepts a comment and holds it. Flush method actually posts comments to
-// GitHub in parallel.
-func (g *PullRequest) Post(_ context.Context, c *comment.Comment) error {
-	c.Result.File = filepath.ToSlash(filepath.Join(g.wd,
-		c.Result.File))
-	g.postComments = append(g.postComments, c)
-	return nil
-}
+func (g *PullRequest) PostAsReviewComment(ctx context.Context, postComments []*comment.Comment) error {
 
-// Flush posts comments which has not been posted yet.
-func (g *PullRequest) Flush(ctx context.Context) error {
-	defer func() { g.postComments = nil }()
-	return g.postAsReviewComment(ctx)
-}
-
-func (g *PullRequest) postAsReviewComment(ctx context.Context) error {
-
-	postComments := g.postComments
-	g.postComments = nil
 	reviewComments := make([]*github.DraftReviewComment, 0, len(postComments))
 	remaining := make([]*comment.Comment, 0)
 	rootPath, err := util.GetGitRoot()
