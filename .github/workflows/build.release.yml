@@ -1,0 +1,30 @@
+name: release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Setup Go for building reviewdog binary.
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+
+      # Create release.
+      - name: Create release with goreleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: "~> v2"
+          args: release --clean
+        env:
+          # Need to use personal access token instead of default token to
+          # update https://github.com/reviewdog/homebrew-tap.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
