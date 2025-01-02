@@ -1,4 +1,5 @@
-Heavily influenced by the excellent reviewdog
+Heavily influenced by reviewdog, but modified and slimmed down for
+my own purposes.
 
 Tool that takes as input a checkstyle.xml file and posts the results
 in a pr-review
