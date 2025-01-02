@@ -99,7 +99,7 @@ func (g *PullRequest) PostAsReviewComment(ctx context.Context, postComments []*c
 		}
 		_, _, err := g.cli.PullRequests.CreateReview(ctx, g.owner, g.repo, g.pr, review)
 		if err != nil {
-			log.Printf("reviewdog: failed to post a review comment: %v", err)
+			log.Printf("Failed to post a review comment: %v", err)
 			// GitHub returns 403 or 404 if we don't have permission to post a review comment.
 			// fallback to log message in this case.
 			return err

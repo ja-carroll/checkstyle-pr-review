@@ -198,7 +198,7 @@ func githubBaseURL() (*url.URL, error) {
 	}
 	u, err := url.Parse(defaultGitHubAPI)
 	if err != nil {
-		return nil, fmt.Errorf("GitHub base URL from reviewdog default is invalid: %v, %w", defaultGitHubAPI, err)
+		return nil, fmt.Errorf("GitHub base URL from default is invalid: %v, %w", defaultGitHubAPI, err)
 	}
 	return u, nil
 }

@@ -124,15 +124,3 @@ func getBuildInfoFromGitHubActionEventPath(eventPath string) (*BuildInfo, bool, 
 	}
 	return info, info.PullRequest != 0, nil
 }
-
-// HasReadOnlyPermissionGitHubToken returns true if reviewdog is running in GitHub
-// Actions and running for PullRequests from forked repository with read-only token.
-// https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target
-func HasReadOnlyPermissionGitHubToken() bool {
-	event, err := LoadGitHubEvent()
-	if err != nil {
-		return false
-	}
-	isForkedRepo := event.PullRequest.Head.Repo.Owner.ID != event.PullRequest.Base.Repo.Owner.ID
-	return isForkedRepo && event.ActionName != "pull_request_target"
-}
