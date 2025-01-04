@@ -8,6 +8,7 @@ import (
 	"checkstyle-review/github"
 	"context"
 	"errors"
+	"fmt"
 	"os"
 )
 
@@ -41,6 +42,7 @@ func Run(ctx context.Context, diffService *github.PullRequest, checkStyleResults
 		postComments = append(postComments, newC)
 	}
 
+	fmt.Println("Posting comments: %d\n", len(postComments))
 	err = diffService.PostAsReviewComment(ctx, postComments)
 	if err != nil {
 		return err

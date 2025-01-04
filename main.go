@@ -89,6 +89,7 @@ func run(inputCheckStyle io.Reader) error {
 	}
 	ds = gs
 
+	fmt.Printf("Running checkstyle: %d\n", len(errorMap))
 	return runner.Run(ctx, ds, errorMap)
 
 }
