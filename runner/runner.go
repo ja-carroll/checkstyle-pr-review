@@ -33,6 +33,7 @@ func Run(ctx context.Context, diffService *github.PullRequest, checkStyleResults
 	var errs []error
 	createDiffMappingDataStructures(fileDiffs)
 	filteredErrors := filterCheckStyleErrors(checkStyleResults)
+	fmt.Printf("Filtered errors: %d\n", len(filteredErrors))
 	postComments := make([]*comment.Comment, 0)
 	for _, res := range filteredErrors {
 		newC := &comment.Comment{
@@ -42,7 +43,7 @@ func Run(ctx context.Context, diffService *github.PullRequest, checkStyleResults
 		postComments = append(postComments, newC)
 	}
 
-	fmt.Println("Posting comments: %d\n", len(postComments))
+	fmt.Printf("Posting comments: %d\n", len(postComments))
 	err = diffService.PostAsReviewComment(ctx, postComments)
 	if err != nil {
 		return err

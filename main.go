@@ -32,7 +32,7 @@ func init() {
 func main() {
 	flag.Parse()
 	// Assume fixed relative path and open main.xml
-	fmt.Printf("Running the checkstyke pre review tool")
+	fmt.Printf("Running the checkstyke pre review tool\n")
 	open, err := os.Open("build/reports/checkstyle/main.xml")
 	if err != nil {
 		fmt.Printf("open file error: %v\n", err)
