@@ -5,10 +5,11 @@ import (
 	"checkstyle-review/github/util"
 	"context"
 	"fmt"
-	"github.com/google/go-github/v64/github"
 	"log"
 	"path/filepath"
 	"strings"
+
+	"github.com/google/go-github/v64/github"
 )
 
 // PullRequest is a comment and diff service for GitHub PullRequest.
@@ -68,9 +69,6 @@ func (g *PullRequest) PostAsReviewComment(ctx context.Context, postComments []*c
 		return err
 	}
 	for _, c := range postComments {
-		if err != nil {
-			return err
-		}
 
 		// Only posts maxCommentsPerRequest comments per 1 request to avoid spammy
 		// review comments. An example GitHub error if we don't limit the # of
