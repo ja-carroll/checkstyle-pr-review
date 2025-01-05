@@ -79,6 +79,7 @@ func filterCheckStyleErrors(checkStyleResults map[string][]*checkstylexml.CheckS
 	cwd, _ := os.Getwd()
 	var filterErrors = make([]*checkstylexml.CheckStyleErrorFormat, 0)
 	for fileName, checkStyleResult := range checkStyleResults {
+		fmt.Printf("Before it was normalized: %s\n", fileName)
 		pathFileName := github.NormalizePath(fileName, cwd, "")
 		fmt.Printf("Filter file name: %s\n", pathFileName)
 		_, ok := linesPerFile[pathFileName]
