@@ -32,6 +32,7 @@ func Run(ctx context.Context, diffService *github.PullRequest, checkStyleResults
 	}
 	var errs []error
 	createDiffMappingDataStructures(fileDiffs)
+	fmt.Printf("lines per file: %v\n", linesPerFile)
 	filteredErrors := filterCheckStyleErrors(checkStyleResults)
 	fmt.Printf("Filtered errors: %d\n", len(filteredErrors))
 	postComments := make([]*comment.Comment, 0)
