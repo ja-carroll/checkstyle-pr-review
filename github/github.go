@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -95,7 +96,7 @@ func (g *PullRequest) PostAsReviewComment(ctx context.Context, postComments []*c
 			Comments: reviewComments,
 			Body:     github.String(g.remainingCommentsSummary(remaining, repoBaseHTMLURL, rootPath)),
 		}
-		
+
 		fmt.Println("Review comment body: %s\n", review.Comments)
 		_, _, err := g.cli.PullRequests.CreateReview(ctx, g.owner, g.repo, g.pr, review)
 		if err != nil {
@@ -112,9 +113,10 @@ func (g *PullRequest) PostAsReviewComment(ctx context.Context, postComments []*c
 
 // Document: https://docs.github.com/en/rest/reference/pulls#create-a-review-comment-for-a-pull-request
 func buildDraftReviewComment(c *comment.Comment, body string) *github.DraftReviewComment {
+	cwd, _ := os.Getwd()
 	startLine, endLine := githubCommentLineRange(c)
 	r := &github.DraftReviewComment{
-		Path: github.String(c.Result.File),
+		Path: github.String(NormalizePath(c.Result.File, cwd, "")),
 		Side: github.String("RIGHT"),
 		Body: github.String(body),
 		Line: github.Int(endLine),
