@@ -10,6 +10,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 // DiffService is an interface which get diff.
@@ -54,9 +56,8 @@ func Run(ctx context.Context, diffService *github.PullRequest, checkStyleResults
 }
 
 func createDiffMappingDataStructures(fileDiffs []*diff.FileDiff) {
-	cwd, _ := os.Getwd()
 	for _, file := range fileDiffs {
-		path := github.NormalizePath(file.PathNew, cwd, "")
+		path := normalizeDiffPath(file.PathNew, 1)
 		lines, ok := linesPerFile[path]
 		if !ok {
 			lines = make(map[int]*diff.Line)
@@ -73,6 +74,21 @@ func createDiffMappingDataStructures(fileDiffs []*diff.FileDiff) {
 		linesPerFile[path] = lines
 
 	}
+}
+
+func normalizeDiffPath(diffpath string, strip int) string {
+	path := diffpath
+	if strip > 0 && !filepath.IsAbs(path) {
+		ps := splitPathList(path)
+		if len(ps) > strip {
+			path = filepath.Join(ps[strip:]...)
+		}
+	}
+	return filepath.ToSlash(filepath.Clean(path))
+}
+
+func splitPathList(path string) []string {
+	return strings.Split(filepath.ToSlash(path), "/")
 }
 
 func filterCheckStyleErrors(checkStyleResults map[string][]*checkstylexml.CheckStyleErrorFormat) []*checkstylexml.CheckStyleErrorFormat {
