@@ -17,10 +17,6 @@ type BuildInfo struct {
 
 	// Optional.
 	Branch string
-
-	// Gerrit related params
-	GerritChangeID   string
-	GerritRevisionID string
 }
 
 // GetBuildInfo returns BuildInfo from environment variables.
@@ -64,15 +60,6 @@ type GitHubPullRequest struct {
 	Base struct {
 		Repo GitHubRepo `json:"repo"`
 	} `json:"base"`
-}
-
-// LoadGitHubEvent loads GitHubEvent if it's running in GitHub Actions.
-func LoadGitHubEvent() (*GitHubEvent, error) {
-	eventPath := os.Getenv("GITHUB_EVENT_PATH")
-	if eventPath == "" {
-		return nil, errors.New("GITHUB_EVENT_PATH not found")
-	}
-	return loadGitHubEventFromPath(eventPath)
 }
 
 func loadGitHubEventFromPath(eventPath string) (*GitHubEvent, error) {
