@@ -97,7 +97,7 @@ func (g *PullRequest) PostAsReviewComment(ctx context.Context, postComments []*c
 			Body:     github.String(g.remainingCommentsSummary(remaining, repoBaseHTMLURL, rootPath)),
 		}
 
-		fmt.Println("Review comment body: %s\n", review.Comments)
+		fmt.Printf("Review comment body: %s\n", review.Comments)
 		_, _, err := g.cli.PullRequests.CreateReview(ctx, g.owner, g.repo, g.pr, review)
 		if err != nil {
 			log.Printf("Failed to post a review comment: %v", err)
